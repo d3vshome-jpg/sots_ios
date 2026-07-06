@@ -17,31 +17,29 @@ struct MainTabView: View {
     @Binding var selectedTab: Int
     
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Main content based on selected tab
-            Group {
-                switch selectedTab {
-                case 0:
-                    NavigationView {
+        NavigationView {
+            ZStack(alignment: .bottom) {
+                // Main content based on selected tab
+                Group {
+                    switch selectedTab {
+                    case 0:
                         FeedView()
-                    }
-                case 1:
-                    SearchView()
-                case 2:
-                    NotificationsView()
-                case 3:
-                    ProfileView()
-                default:
-                    NavigationView {
+                    case 1:
+                        SearchView()
+                    case 2:
+                        NotificationsView()
+                    case 3:
+                        ProfileView()
+                    default:
                         FeedView()
                     }
                 }
+                .ignoresSafeArea(edges: .bottom)
+                
+                // Liquid Glass Tab Bar
+                LiquidGlassTabBar(selectedTab: $selectedTab)
             }
-            .ignoresSafeArea(edges: .bottom)
-            
-            // Liquid Glass Tab Bar
-            LiquidGlassTabBar(selectedTab: $selectedTab)
+            .background(Color(UIColor.systemGroupedBackground))
         }
-        .background(Color(UIColor.systemGroupedBackground))
     }
 }
