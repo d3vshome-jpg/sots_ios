@@ -207,7 +207,7 @@ struct UserRow: View {
                 HStack(spacing: 4) {
                     Text(user.username)
                         .font(.headline)
-                    if user.verified {
+                    if user.isVerified {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.caption)
                             .foregroundColor(.blue)
