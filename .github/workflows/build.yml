@@ -16,22 +16,14 @@ jobs:
     - name: Fix gradlew permissions
       run: chmod +x gradlew
     
-    - name: Build iOS App for Device
+    - name: Build iOS App for Simulator
       run: |
         cd iosApp
-        xcodebuild -scheme iosApp -configuration Release -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+        xcodebuild -scheme iosApp -configuration Release -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SKIP_KOTLIN_FRAMEWORK=1
     
-    - name: Create IPA
-      run: |
-        cd iosApp
-        mkdir -p build/IPA
-        cp -r build/Build/Products/Release-iphoneos/*.app build/IPA/
-        cd build/IPA
-        zip -r ../ios-app.ipa *.app
-    
-    - name: Upload IPA
+    - name: Upload .app
       uses: actions/upload-artifact@v4
       with:
-        name: ios-app-ipa
-        path: iosApp/build/ios-app.ipa
+        name: ios-app
+        path: iosApp/build/Build/Products/Release-iphonesimulator/*.app
         retention-days: 30
