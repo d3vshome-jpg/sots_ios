@@ -19,7 +19,7 @@ jobs:
     - name: Build iOS App for Simulator
       run: |
         cd iosApp
-        xcodebuild -scheme iosApp -configuration Release -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SKIP_KOTLIN_FRAMEWORK=1
+        xcodebuild -scheme iosApp -configuration Release -destination 'platform=iOS Simulator,name=iPhone 16' -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SKIP_KOTLIN_FRAMEWORK=1
     
     - name: Upload .app
       uses: actions/upload-artifact@v4
