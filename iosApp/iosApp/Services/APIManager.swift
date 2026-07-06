@@ -27,23 +27,36 @@ class APIManager {
             endpoint += "&user_id=\(userId)"
         }
         
+        print("Fetching posts: \(endpoint)")
         guard let url = URL(string: endpoint) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
+                print("Posts fetch error: \(error)")
                 completion(.failure(error))
                 return
             }
             
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Posts HTTP status: \(httpResponse.statusCode)")
+            }
+            
             guard let data = data else {
+                print("Posts: No data")
                 completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
                 return
             }
             
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Posts response: \(jsonString)")
+            }
+            
             do {
                 let posts = try JSONDecoder().decode([Post].self, from: data)
+                print("Posts decoded: \(posts.count) posts")
                 completion(.success(posts))
             } catch {
+                print("Posts decode error: \(error)")
                 completion(.failure(error))
             }
         }.resume()
@@ -195,23 +208,36 @@ class APIManager {
     
     func fetchCurrentUser(completion: @escaping (Result<User, Error>) -> Void) {
         let endpoint = "\(baseURL)/users/users.php"
+        print("Fetching current user: \(endpoint)")
         guard let url = URL(string: endpoint) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
+                print("Current user fetch error: \(error)")
                 completion(.failure(error))
                 return
             }
             
+            if let httpResponse = response as? HTTPURLResponse {
+                print("Current user HTTP status: \(httpResponse.statusCode)")
+            }
+            
             guard let data = data else {
+                print("Current user: No data")
                 completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
                 return
             }
             
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Current user response: \(jsonString)")
+            }
+            
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
+                print("Current user decoded: \(user.username)")
                 completion(.success(user))
             } catch {
+                print("Current user decode error: \(error)")
                 completion(.failure(error))
             }
         }.resume()
@@ -219,23 +245,36 @@ class APIManager {
     
     func fetchUserProfile(userId: Int, completion: @escaping (Result<User, Error>) -> Void) {
         let endpoint = "\(baseURL)/users/users.php?id=\(userId)"
+        print("Fetching user profile: \(endpoint)")
         guard let url = URL(string: endpoint) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
+                print("User profile fetch error: \(error)")
                 completion(.failure(error))
                 return
             }
             
+            if let httpResponse = response as? HTTPURLResponse {
+                print("User profile HTTP status: \(httpResponse.statusCode)")
+            }
+            
             guard let data = data else {
+                print("User profile: No data")
                 completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
                 return
             }
             
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("User profile response: \(jsonString)")
+            }
+            
             do {
                 let user = try JSONDecoder().decode(User.self, from: data)
+                print("User profile decoded: \(user.username)")
                 completion(.success(user))
             } catch {
+                print("User profile decode error: \(error)")
                 completion(.failure(error))
             }
         }.resume()
