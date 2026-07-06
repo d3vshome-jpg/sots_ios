@@ -54,7 +54,7 @@ struct ProfileView: View {
                                     .font(.title2)
                                     .fontWeight(.bold)
                                     .foregroundColor(.white)
-                                if user.verified {
+                                if user.isVerified {
                                     Image(systemName: "checkmark.seal.fill")
                                         .foregroundColor(.white)
                                 }

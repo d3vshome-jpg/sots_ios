@@ -5,7 +5,6 @@ struct Post: Identifiable, Codable {
     let userId: Int
     let username: String
     let emoji: String?
-    let friends: [Int]
     let images: [String]
     let videos: [String]
     let audio: [String]
@@ -14,13 +13,13 @@ struct Post: Identifiable, Codable {
     let caption: String
     let likes: [Int]
     let createdAt: String
+    let repostOf: Int?
     
     enum CodingKeys: String, CodingKey {
         case id
         case userId = "user_id"
         case username
         case emoji
-        case friends
         case images
         case videos
         case audio
@@ -29,6 +28,7 @@ struct Post: Identifiable, Codable {
         case caption
         case likes
         case createdAt = "created_at"
+        case repostOf = "repost_of"
     }
     
     var isLiked: Bool {
@@ -47,7 +47,7 @@ struct User: Identifiable, Codable {
     let emoji: String?
     let bio: String?
     let friends: [Int]
-    let verified: Bool
+    let verified: Int
     let isAdmin: Bool?
     let pin: String?
     
@@ -60,6 +60,10 @@ struct User: Identifiable, Codable {
         case verified
         case isAdmin = "is_admin"
         case pin
+    }
+    
+    var isVerified: Bool {
+        verified == 1
     }
     
     var followersCount: Int {
