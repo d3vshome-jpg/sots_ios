@@ -4,6 +4,7 @@ struct SearchView: View {
     @State private var searchText = ""
     @State private var searchResults: SearchResponse?
     @State private var isLoading = false
+    @State private var searchDebounceTask: Task<Void, Never>?
     
     var body: some View {
         ZStack {
@@ -111,10 +112,20 @@ struct SearchView: View {
         .onChange(of: searchText) { _, newValue in
             if newValue.isEmpty {
                 searchResults = nil
+                searchDebounceTask?.cancel()
+            } else {
+                searchDebounceTask?.cancel()
+                searchDebounceTask = Task {
+                    try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 sec debounce
+                    if !Task.isCancelled {
+                        await performSearch()
+                    }
+                }
             }
         }
     }
     
+    @MainActor
     private func performSearch() {
         guard !searchText.isEmpty else { return }
         isLoading = true
@@ -125,6 +136,7 @@ struct SearchView: View {
                 switch result {
                 case .success(let response):
                     searchResults = response
+                    print("Search results: \(response)")
                 case .failure(let error):
                     print("Error searching: \(error)")
                 }

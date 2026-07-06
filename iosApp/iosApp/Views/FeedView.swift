@@ -88,25 +88,29 @@ struct PostCard: View {
             // Header
             HStack {
                 // Avatar with emoji or gradient
-                if let emoji = post.emoji {
-                    Text(emoji)
-                        .font(.system(size: 32))
-                        .frame(width: 40, height: 40)
-                        .background(Color(UIColor.secondarySystemGroupedBackground))
-                        .clipShape(Circle())
-                } else {
-                    Circle()
-                        .fill(LinearGradient(
-                            colors: [Color(hex: "ff4d6a"), Color(hex: "6c5ce7")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ))
-                        .frame(width: 40, height: 40)
-                        .overlay(
-                            Text(String(post.username.prefix(1)).uppercased())
-                                .font(.headline)
-                                .foregroundColor(.white)
-                        )
+                Button(action: {
+                    // Navigate to user profile
+                }) {
+                    if let emoji = post.emoji {
+                        Text(emoji)
+                            .font(.system(size: 32))
+                            .frame(width: 40, height: 40)
+                            .background(Color(UIColor.secondarySystemGroupedBackground))
+                            .clipShape(Circle())
+                    } else {
+                        Circle()
+                            .fill(LinearGradient(
+                                colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .frame(width: 40, height: 40)
+                            .overlay(
+                                Text(String(post.username.prefix(1)).uppercased())
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                            )
+                    }
                 }
                 
                 VStack(alignment: .leading, spacing: 2) {
@@ -183,24 +187,18 @@ struct PostCard: View {
                     }
                 }
                 
-                Button(action: {}) {
+                Button(action: {
+                    if let url = URL(string: "https://sots.pw/post/\(post.id)") {
+                        UIApplication.shared.open(url)
+                    }
+                }) {
                     HStack(spacing: 4) {
-                        Image(systemName: "bubble.left")
+                        Image(systemName: "square.and.arrow.up")
                             .foregroundColor(.gray)
                     }
                 }
                 
-                Button(action: {}) {
-                    Image(systemName: "arrow.turn.up.right")
-                        .foregroundColor(.gray)
-                }
-                
                 Spacer()
-                
-                Button(action: {}) {
-                    Image(systemName: "bookmark")
-                        .foregroundColor(.gray)
-                }
             }
         }
         .padding()

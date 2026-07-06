@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LiquidGlassTabBar: View {
     @Binding var selectedTab: Int
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         HStack(spacing: 0) {
@@ -84,21 +85,38 @@ struct TabBarButton: View {
     let label: String
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 20))
-                    .foregroundColor(isSelected ? .white : .white.opacity(0.6))
+                    .foregroundColor(iconColor)
                     .scaleEffect(isSelected ? 1.1 : 1.0)
                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSelected)
                 
                 Text(label)
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(isSelected ? .white : .white.opacity(0.6))
+                    .foregroundColor(textColor)
             }
             .frame(maxWidth: .infinity)
+        }
+    }
+    
+    private var iconColor: Color {
+        if isSelected {
+            return colorScheme == .dark ? .white : Color(hex: "FF4D6A")
+        } else {
+            return colorScheme == .dark ? .white.opacity(0.6) : .gray
+        }
+    }
+    
+    private var textColor: Color {
+        if isSelected {
+            return colorScheme == .dark ? .white : Color(hex: "FF4D6A")
+        } else {
+            return colorScheme == .dark ? .white.opacity(0.6) : .gray
         }
     }
 }
