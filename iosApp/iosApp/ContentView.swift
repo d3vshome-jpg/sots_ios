@@ -22,7 +22,9 @@ struct MainTabView: View {
             Group {
                 switch selectedTab {
                 case 0:
-                    FeedView()
+                    NavigationView {
+                        FeedView()
+                    }
                 case 1:
                     SearchView()
                 case 2:
@@ -30,7 +32,9 @@ struct MainTabView: View {
                 case 3:
                     ProfileView()
                 default:
-                    FeedView()
+                    NavigationView {
+                        FeedView()
+                    }
                 }
             }
             .ignoresSafeArea(edges: .bottom)

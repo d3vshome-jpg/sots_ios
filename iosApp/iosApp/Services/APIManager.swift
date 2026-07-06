@@ -134,23 +134,32 @@ class APIManager {
     
     func search(query: String, completion: @escaping (Result<SearchResponse, Error>) -> Void) {
         let endpoint = "\(baseURL)/users/search.php?q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
+        print("Search endpoint: \(endpoint)")
         guard let url = URL(string: endpoint) else { return }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
+                print("Search error: \(error)")
                 completion(.failure(error))
                 return
             }
             
             guard let data = data else {
+                print("Search: No data")
                 completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
                 return
             }
             
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("Search response: \(jsonString)")
+            }
+            
             do {
                 let response = try JSONDecoder().decode(SearchResponse.self, from: data)
+                print("Search decoded: users=\(response.users.count), posts=\(response.posts.count), hashtags=\(response.hashtags.count)")
                 completion(.success(response))
             } catch {
+                print("Search decode error: \(error)")
                 completion(.failure(error))
             }
         }.resume()

@@ -3,6 +3,7 @@ import SwiftUI
 struct FeedView: View {
     @State private var posts: [Post] = []
     @State private var isLoading = true
+    @State private var selectedProfileUserId: Int?
     
     var body: some View {
         ZStack {
@@ -44,7 +45,9 @@ struct FeedView: View {
                             .padding(.top, 50)
                         } else {
                             ForEach(posts) { post in
-                                PostCard(post: post)
+                                PostCard(post: post, onProfileTap: { userId in
+                                    selectedProfileUserId = userId
+                                })
                             }
                         }
                     }
@@ -57,6 +60,16 @@ struct FeedView: View {
         .onAppear {
             loadPosts()
         }
+        .background(
+            NavigationLink(
+                destination: selectedProfileUserId.map { ProfileView(userId: $0) },
+                isActive: Binding(
+                    get: { selectedProfileUserId != nil },
+                    set: { if !$0 { selectedProfileUserId = nil } }
+                ),
+                label: { EmptyView() }
+            )
+        )
     }
     
     private func loadPosts() {
@@ -76,10 +89,13 @@ struct FeedView: View {
 
 struct PostCard: View {
     let post: Post
+    let onProfileTap: (Int) -> Void
     @State private var isLiked: Bool
+    @State private var showShareSheet = false
     
-    init(post: Post) {
+    init(post: Post, onProfileTap: @escaping (Int) -> Void = { _ in }) {
         self.post = post
+        self.onProfileTap = onProfileTap
         self._isLiked = State(initialValue: post.isLiked)
     }
     
@@ -89,7 +105,7 @@ struct PostCard: View {
             HStack {
                 // Avatar with emoji or gradient
                 Button(action: {
-                    // Navigate to user profile
+                    onProfileTap(post.userId)
                 }) {
                     if let emoji = post.emoji {
                         Text(emoji)
@@ -188,9 +204,7 @@ struct PostCard: View {
                 }
                 
                 Button(action: {
-                    if let url = URL(string: "https://sots.pw/post/\(post.id)") {
-                        UIApplication.shared.open(url)
-                    }
+                    sharePost(postId: post.id)
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "square.and.arrow.up")
@@ -204,6 +218,13 @@ struct PostCard: View {
         .padding()
         .background(Color(UIColor.secondarySystemGroupedBackground))
         .cornerRadius(16)
+        .sheet(isPresented: $showShareSheet) {
+            ShareSheet(activityItems: [URL(string: "https://sots.pw/post/\(post.id)")!])
+        }
+    }
+    
+    private func sharePost(postId: Int) {
+        showShareSheet = true
     }
     
     private func timeAgo(_ dateString: String) -> String {
@@ -215,6 +236,16 @@ struct PostCard: View {
         if interval < 86400 { return "\(Int(interval/3600)) ч назад" }
         return "\(Int(interval/86400)) д назад"
     }
+}
+
+struct ShareSheet: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 struct MusicCard: View {

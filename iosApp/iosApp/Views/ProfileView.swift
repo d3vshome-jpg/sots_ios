@@ -1,9 +1,14 @@
 import SwiftUI
 
 struct ProfileView: View {
+    let userId: Int?
     @State private var user: User?
     @State private var userPosts: [Post] = []
     @State private var isLoading = true
+    
+    init(userId: Int? = nil) {
+        self.userId = userId
+    }
     
     var body: some View {
         ZStack {
@@ -119,27 +124,47 @@ struct ProfileView: View {
     
     private func loadUserProfile() {
         isLoading = true
+        print("Loading user profile... userId: \(String(describing: userId))")
         
-        APIManager.shared.fetchCurrentUser { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let fetchedUser):
-                    user = fetchedUser
-                    loadUserPosts(userId: fetchedUser.id)
-                case .failure(let error):
-                    print("Error loading user profile: \(error)")
-                    isLoading = false
+        if let userId = userId {
+            APIManager.shared.fetchUserProfile(userId: userId) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let fetchedUser):
+                        print("User loaded: \(fetchedUser)")
+                        user = fetchedUser
+                        loadUserPosts(userId: fetchedUser.id)
+                    case .failure(let error):
+                        print("Error loading user profile: \(error)")
+                        isLoading = false
+                    }
+                }
+            }
+        } else {
+            APIManager.shared.fetchCurrentUser { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let fetchedUser):
+                        print("User loaded: \(fetchedUser)")
+                        user = fetchedUser
+                        loadUserPosts(userId: fetchedUser.id)
+                    case .failure(let error):
+                        print("Error loading user profile: \(error)")
+                        isLoading = false
+                    }
                 }
             }
         }
     }
     
     private func loadUserPosts(userId: Int) {
+        print("Loading posts for user \(userId)...")
         APIManager.shared.fetchPosts(userId: userId) { result in
             DispatchQueue.main.async {
                 isLoading = false
                 switch result {
                 case .success(let posts):
+                    print("Posts loaded: \(posts.count)")
                     userPosts = posts
                 case .failure(let error):
                     print("Error loading user posts: \(error)")
