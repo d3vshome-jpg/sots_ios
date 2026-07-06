@@ -5,24 +5,43 @@ struct NotificationsView: View {
     @State private var isLoading = true
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color(UIColor.systemGroupedBackground)
-                    .ignoresSafeArea()
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header with logo
+                HStack {
+                    Spacer()
+                    Image("sotspw")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 30)
+                    Spacer()
+                }
+                .padding(.top, 50)
+                .padding(.bottom, 10)
                 
-                if isLoading {
-                    ProgressView("Загрузка...")
-                } else if notifications.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "bell.slash")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
-                        Text("Нет уведомлений")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                    }
-                } else {
-                    ScrollView {
+                // Content
+                ScrollView {
+                    if isLoading {
+                        ProgressView("Загрузка...")
+                            .padding(.top, 50)
+                    } else if notifications.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "bell.slash")
+                                .font(.system(size: 60))
+                                .foregroundColor(.white.opacity(0.6))
+                            Text("Нет уведомлений")
+                                .font(.headline)
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                        .padding(.top, 50)
+                    } else {
                         LazyVStack(spacing: 8) {
                             ForEach(notifications) { notification in
                                 NotificationRow(notification: notification)
@@ -31,9 +50,9 @@ struct NotificationsView: View {
                         .padding()
                     }
                 }
+                .background(Color(UIColor.systemGroupedBackground))
+                .cornerRadius(20, corners: [.topLeft, .topRight])
             }
-            .navigationTitle("Уведомления")
-            .navigationBarTitleDisplayMode(.large)
         }
         .onAppear {
             loadNotifications()

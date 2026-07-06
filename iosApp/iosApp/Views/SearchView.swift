@@ -6,86 +6,107 @@ struct SearchView: View {
     @State private var isLoading = false
     
     var body: some View {
-        NavigationView {
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
             VStack(spacing: 0) {
-                // Search Bar
-                SearchBar(text: $searchText, onSearch: performSearch)
-                    .padding()
+                // Header with logo
+                HStack {
+                    Spacer()
+                    Image("sotspw")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 30)
+                    Spacer()
+                }
+                .padding(.top, 50)
+                .padding(.bottom, 10)
                 
-                // Results
-                ScrollView {
-                    if isLoading {
-                        ProgressView("Поиск...")
-                            .padding(.top, 50)
-                    } else if let results = searchResults {
-                        VStack(spacing: 12) {
-                            // Users
-                            if !results.users.isEmpty {
-                                Text("Пользователи")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal)
-                                
-                                ForEach(results.users) { user in
-                                    UserRow(user: user)
-                                }
-                            }
-                            
-                            // Posts
-                            if !results.posts.isEmpty {
-                                Text("Посты")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal)
-                                    .padding(.top, 8)
-                                
-                                ForEach(results.posts) { post in
-                                    PostCard(post: post)
-                                }
-                            }
-                            
-                            // Hashtags
-                            if !results.hashtags.isEmpty {
-                                Text("Хештеги")
-                                    .font(.headline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal)
-                                    .padding(.top, 8)
-                                
-                                ForEach(results.hashtags) { hashtag in
-                                    HashtagRow(hashtag: hashtag)
-                                }
-                            }
-                            
-                            if results.users.isEmpty && results.posts.isEmpty && results.hashtags.isEmpty {
-                                VStack(spacing: 16) {
-                                    Image(systemName: "magnifyingglass")
-                                        .font(.system(size: 50))
-                                        .foregroundColor(.gray)
-                                    Text("Ничего не найдено")
-                                        .font(.headline)
-                                        .foregroundColor(.gray)
-                                }
-                                .padding(.top, 50)
-                            }
-                        }
+                // Content
+                VStack(spacing: 0) {
+                    // Search Bar
+                    SearchBar(text: $searchText, onSearch: performSearch)
                         .padding()
-                    } else {
-                        VStack(spacing: 16) {
-                            Image(systemName: "magnifyingglass")
-                                .font(.system(size: 50))
-                                .foregroundColor(.gray.opacity(0.5))
-                            Text("Поиск по хештегам, пользователям и постам")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
+                    
+                    // Results
+                    ScrollView {
+                        if isLoading {
+                            ProgressView("Поиск...")
+                                .padding(.top, 50)
+                        } else if let results = searchResults {
+                            VStack(spacing: 12) {
+                                // Users
+                                if !results.users.isEmpty {
+                                    Text("Пользователи")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.horizontal)
+                                    
+                                    ForEach(results.users) { user in
+                                        UserRow(user: user)
+                                    }
+                                }
+                                
+                                // Posts
+                                if !results.posts.isEmpty {
+                                    Text("Посты")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.horizontal)
+                                        .padding(.top, 8)
+                                    
+                                    ForEach(results.posts) { post in
+                                        PostCard(post: post)
+                                    }
+                                }
+                                
+                                // Hashtags
+                                if !results.hashtags.isEmpty {
+                                    Text("Хештеги")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.horizontal)
+                                        .padding(.top, 8)
+                                    
+                                    ForEach(results.hashtags) { hashtag in
+                                        HashtagRow(hashtag: hashtag)
+                                    }
+                                }
+                                
+                                if results.users.isEmpty && results.posts.isEmpty && results.hashtags.isEmpty {
+                                    VStack(spacing: 16) {
+                                        Image(systemName: "magnifyingglass")
+                                            .font(.system(size: 50))
+                                            .foregroundColor(.gray)
+                                        Text("Ничего не найдено")
+                                            .font(.headline)
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(.top, 50)
+                                }
+                            }
+                            .padding()
+                        } else {
+                            VStack(spacing: 16) {
+                                Image(systemName: "magnifyingglass")
+                                    .font(.system(size: 50))
+                                    .foregroundColor(.white.opacity(0.5))
+                                Text("Поиск по хештегам, пользователям и постам")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.5))
+                            }
+                            .padding(.top, 50)
                         }
-                        .padding(.top, 50)
                     }
                 }
+                .background(Color(UIColor.systemGroupedBackground))
+                .cornerRadius(20, corners: [.topLeft, .topRight])
             }
-            .background(Color(UIColor.systemGroupedBackground))
-            .navigationTitle("Поиск")
-            .navigationBarTitleDisplayMode(.large)
         }
         .onChange(of: searchText) { _, newValue in
             if newValue.isEmpty {

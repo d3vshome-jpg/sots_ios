@@ -1,0 +1,37 @@
+name: Build iOS App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Fix gradlew permissions
+      run: chmod +x gradlew
+    
+    - name: Build iOS App for Device
+      run: |
+        cd iosApp
+        xcodebuild -scheme iosApp -configuration Release -destination 'generic/platform=iOS' -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+    
+    - name: Create IPA
+      run: |
+        cd iosApp
+        mkdir -p build/IPA
+        cp -r build/Build/Products/Release-iphoneos/*.app build/IPA/
+        cd build/IPA
+        zip -r ../ios-app.ipa *.app
+    
+    - name: Upload IPA
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-app-ipa
+        path: iosApp/build/ios-app.ipa
+        retention-days: 30

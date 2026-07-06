@@ -7,27 +7,29 @@ struct ProfileView: View {
     @State private var isLoading = true
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Header with gradient
-                    ZStack {
-                        LinearGradient(
-                            colors: [Color(hex: "ff4d6a"), Color(hex: "6c5ce7")],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                        .frame(height: 200)
-                        
-                        // Logo
-                        Text("sotspw")
-                            .font(.title)
-                            .fontWeight(.black)
-                            .foregroundColor(.white)
-                            .position(x: UIScreen.main.bounds.width / 2, y: 40)
-                    }
-                    
-                    // Profile info
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header with logo
+                HStack {
+                    Spacer()
+                    Image("sotspw")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 30)
+                    Spacer()
+                }
+                .padding(.top, 50)
+                .padding(.bottom, 10)
+                
+                // Content
+                ScrollView {
                     VStack(spacing: 20) {
                         // Avatar with emoji
                         if let emoji = user?.emoji {
@@ -40,11 +42,10 @@ struct ProfileView: View {
                                     Circle()
                                         .stroke(Color.white, lineWidth: 4)
                                 )
-                                .offset(y: -50)
                         } else {
                             Circle()
                                 .fill(LinearGradient(
-                                    colors: [Color(hex: "ff4d6a"), Color(hex: "6c5ce7")],
+                                    colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 ))
@@ -58,7 +59,6 @@ struct ProfileView: View {
                                         .font(.system(size: 40, weight: .black))
                                         .foregroundColor(.white)
                                 )
-                                offset(y: -50)
                         }
                         
                         // Username
@@ -67,9 +67,10 @@ struct ProfileView: View {
                                 Text(user.username)
                                     .font(.title2)
                                     .fontWeight(.bold)
+                                    .foregroundColor(.white)
                                 if user.verified {
                                     Image(systemName: "checkmark.seal.fill")
-                                        .foregroundColor(.blue)
+                                        .foregroundColor(.white)
                                 }
                             }
                             
@@ -77,7 +78,7 @@ struct ProfileView: View {
                             if let bio = user.bio {
                                 Text(bio)
                                     .font(.body)
-                                    .foregroundColor(.gray)
+                                    .foregroundColor(.white.opacity(0.8))
                                     .multilineTextAlignment(.center)
                             }
                             
@@ -93,16 +94,18 @@ struct ProfileView: View {
                                 Button(action: {}) {
                                     Text("Редактировать")
                                         .fontWeight(.semibold)
+                                        .foregroundColor(Color(hex: "FF4D6A"))
                                         .frame(maxWidth: .infinity)
                                         .padding()
-                                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                                        .background(Color.white)
                                         .cornerRadius(12)
                                 }
                                 
                                 Button(action: {}) {
                                     Image(systemName: "square.and.arrow.up")
+                                        .foregroundColor(Color(hex: "FF4D6A"))
                                         .frame(width: 44, height: 44)
-                                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                                        .background(Color.white)
                                         .cornerRadius(12)
                                 }
                             }
@@ -128,12 +131,11 @@ struct ProfileView: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
-                    .offset(y: -30)
+                    .padding()
                 }
+                .background(Color(UIColor.systemGroupedBackground))
+                .cornerRadius(20, corners: [.topLeft, .topRight])
             }
-            .background(Color(UIColor.systemGroupedBackground))
-            .navigationBarHidden(true)
         }
         .onAppear {
             loadUserProfile()

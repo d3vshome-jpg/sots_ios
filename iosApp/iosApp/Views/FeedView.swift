@@ -5,35 +5,54 @@ struct FeedView: View {
     @State private var isLoading = true
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                Color(UIColor.systemGroupedBackground)
-                    .ignoresSafeArea()
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header with logo
+                HStack {
+                    Spacer()
+                    Image("sotspw")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(height: 30)
+                    Spacer()
+                }
+                .padding(.top, 50)
+                .padding(.bottom, 10)
                 
-                if isLoading {
-                    ProgressView("Загрузка...")
-                } else if posts.isEmpty {
-                    VStack(spacing: 16) {
-                        Image(systemName: "tray")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
-                        Text("Нет постов")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                    }
-                } else {
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
+                // Content
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        if isLoading {
+                            ProgressView("Загрузка...")
+                                .padding(.top, 50)
+                        } else if posts.isEmpty {
+                            VStack(spacing: 16) {
+                                Image(systemName: "tray")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(.white.opacity(0.6))
+                                Text("Нет постов")
+                                    .font(.headline)
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                            .padding(.top, 50)
+                        } else {
                             ForEach(posts) { post in
                                 PostCard(post: post)
                             }
                         }
-                        .padding()
                     }
+                    .padding()
                 }
+                .background(Color(UIColor.systemGroupedBackground))
+                .cornerRadius(20, corners: [.topLeft, .topRight])
             }
-            .navigationTitle("Лента")
-            .navigationBarTitleDisplayMode(.large)
         }
         .onAppear {
             loadPosts()
@@ -253,6 +272,26 @@ struct VideoPlayerView: View {
                         .foregroundColor(.white)
                 )
         }
+    }
+}
+
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
     }
 }
 
