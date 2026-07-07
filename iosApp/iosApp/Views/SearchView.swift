@@ -7,26 +7,18 @@ struct SearchView: View {
     @State private var searchDebounceTask: Task<Void, Never>?
     
     var body: some View {
-        ZStack {
-            LinearGradient(
-                colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // Header with logo
-                HStack {
-                    Spacer()
-                    Image("sotspw")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 30)
-                    Spacer()
-                }
-                .padding(.top, 50)
-                .padding(.bottom, 10)
+        VStack(spacing: 0) {
+            // Header with logo
+            HStack {
+                Spacer()
+                Image("sotspw")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 30)
+                Spacer()
+            }
+            .padding(.top, 50)
+            .padding(.bottom, 10)
                 
                 // Content
                 VStack(spacing: 0) {

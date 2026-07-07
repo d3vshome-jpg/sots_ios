@@ -7,7 +7,7 @@ struct Post: Identifiable, Codable {
     let emoji: String?
     let images: [String]
     let videos: [String]
-    let audio: [String]
+    let audio: [String]?
     let artist: String?
     let title: String?
     let caption: String
