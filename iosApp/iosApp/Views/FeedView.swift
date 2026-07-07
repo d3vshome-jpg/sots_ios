@@ -18,36 +18,35 @@ struct FeedView: View {
             }
             .padding(.top, 50)
             .padding(.bottom, 10)
-                
-                // Content
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        if isLoading {
-                            ProgressView("Загрузка...")
-                                .padding(.top, 50)
-                        } else if posts.isEmpty {
-                            VStack(spacing: 16) {
-                                Image(systemName: "tray")
-                                    .font(.system(size: 60))
-                                    .foregroundColor(.white.opacity(0.6))
-                                Text("Нет постов")
-                                    .font(.headline)
-                                    .foregroundColor(.white.opacity(0.6))
-                            }
+            
+            // Content
+            ScrollView {
+                LazyVStack(spacing: 12) {
+                    if isLoading {
+                        ProgressView("Загрузка...")
                             .padding(.top, 50)
-                        } else {
-                            ForEach(posts) { post in
-                                PostCard(post: post, onProfileTap: { userId in
-                                    selectedProfileUserId = userId
-                                })
-                            }
+                    } else if posts.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "tray")
+                                .font(.system(size: 60))
+                                .foregroundColor(.white.opacity(0.6))
+                            Text("Нет постов")
+                                .font(.headline)
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                        .padding(.top, 50)
+                    } else {
+                        ForEach(posts) { post in
+                            PostCard(post: post, onProfileTap: { userId in
+                                selectedProfileUserId = userId
+                            })
                         }
                     }
-                    .padding()
                 }
-                .background(Color(UIColor.systemGroupedBackground))
-                .cornerRadius(20, corners: [.topLeft, .topRight])
+                .padding()
             }
+            .background(Color(UIColor.systemGroupedBackground))
+            .cornerRadius(20, corners: [.topLeft, .topRight])
         }
         .onAppear {
             loadPosts()

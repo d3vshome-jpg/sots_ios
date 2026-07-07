@@ -17,34 +17,33 @@ struct NotificationsView: View {
             }
             .padding(.top, 50)
             .padding(.bottom, 10)
-                
-                // Content
-                ScrollView {
-                    if isLoading {
-                        ProgressView("Загрузка...")
-                            .padding(.top, 50)
-                    } else if notifications.isEmpty {
-                        VStack(spacing: 16) {
-                            Image(systemName: "bell.slash")
-                                .font(.system(size: 60))
-                                .foregroundColor(.white.opacity(0.6))
-                            Text("Нет уведомлений")
-                                .font(.headline)
-                                .foregroundColor(.white.opacity(0.6))
-                        }
+            
+            // Content
+            ScrollView {
+                if isLoading {
+                    ProgressView("Загрузка...")
                         .padding(.top, 50)
-                    } else {
-                        LazyVStack(spacing: 8) {
-                            ForEach(notifications) { notification in
-                                NotificationRow(notification: notification)
-                            }
-                        }
-                        .padding()
+                } else if notifications.isEmpty {
+                    VStack(spacing: 16) {
+                        Image(systemName: "bell.slash")
+                            .font(.system(size: 60))
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("Нет уведомлений")
+                            .font(.headline)
+                            .foregroundColor(.white.opacity(0.6))
                     }
+                    .padding(.top, 50)
+                } else {
+                    LazyVStack(spacing: 8) {
+                        ForEach(notifications) { notification in
+                            NotificationRow(notification: notification)
+                        }
+                    }
+                    .padding()
                 }
-                .background(Color(UIColor.systemGroupedBackground))
-                .cornerRadius(20, corners: [.topLeft, .topRight])
             }
+            .background(Color(UIColor.systemGroupedBackground))
+            .cornerRadius(20, corners: [.topLeft, .topRight])
         }
         .onAppear {
             loadNotifications()
