@@ -165,7 +165,14 @@ struct ProfileView: View {
             loadUserProfile()
         }
         .sheet(isPresented: $showEditProfile) {
-            EditProfileView(user: user)
+            if let user = user {
+                EditProfileView(user: Binding(
+                    get: { user },
+                    set: { newValue in
+                        self.user = newValue
+                    }
+                ))
+            }
         }
         .sheet(isPresented: $showCreatePost) {
             CreatePostTypeSelection()
