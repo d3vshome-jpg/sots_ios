@@ -25,32 +25,20 @@ struct LiquidGlassTabBar: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
         .background(
-            // Liquid glass effect with gradient
+            // True iOS liquid glass effect
             ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: [
-                        Color(hex: "FF4D6A"),
-                        Color(hex: "FF8FA3")
-                    ],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .opacity(0.3)
-                
-                // Glass blur
+                // Glass blur material
                 Rectangle()
-                    .fill(.ultraThinMaterial)
-                    .blur(radius: 1)
+                    .fill(.regularMaterial)
                 
-                // Glass reflection
+                // Subtle white gradient for glass reflection
                 Rectangle()
                     .fill(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.4),
-                                Color.clear,
-                                Color.white.opacity(0.1)
+                                Color.white.opacity(0.3),
+                                Color.white.opacity(0.05),
+                                Color.clear
                             ],
                             startPoint: .top,
                             endPoint: .bottom
@@ -58,23 +46,23 @@ struct LiquidGlassTabBar: View {
                     )
                     .blendMode(.overlay)
                 
-                // Subtle border
+                // Glass border
                 Rectangle()
                     .strokeBorder(
                         LinearGradient(
                             colors: [
-                                Color.white.opacity(0.4),
-                                Color.white.opacity(0.1)
+                                Color.white.opacity(0.2),
+                                Color.white.opacity(0.05)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
-                        lineWidth: 1
+                        lineWidth: 0.5
                     )
             }
         )
         .cornerRadius(25)
-        .shadow(color: Color(hex: "FF4D6A").opacity(0.3), radius: 20, x: 0, y: 10)
+        .shadow(color: Color.black.opacity(0.1), radius: 20, x: 0, y: 10)
         .padding(.horizontal, 16)
         .padding(.bottom, 30)
     }
@@ -106,29 +94,25 @@ struct TabBarButton: View {
     
     private var iconColor: Color {
         if isSelected {
-            return colorScheme == .dark ? .white : Color(hex: "FF4D6A")
+            return .blue
         } else {
-            return colorScheme == .dark ? .white.opacity(0.6) : .gray
+            return .gray
         }
     }
     
     private var textColor: Color {
         if isSelected {
-            return colorScheme == .dark ? .white : Color(hex: "FF4D6A")
+            return .blue
         } else {
-            return colorScheme == .dark ? .white.opacity(0.6) : .gray
+            return .gray
         }
     }
 }
 
 #Preview {
     ZStack {
-        LinearGradient(
-            colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
+        Color(UIColor.systemBackground)
+            .ignoresSafeArea()
         
         VStack {
             Spacer()
