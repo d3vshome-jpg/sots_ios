@@ -5,19 +5,26 @@ struct AuthView: View {
     @State private var isLoginMode = true
     @State private var username = ""
     @State private var password = ""
+    @State private var email = ""
     @State private var emoji = "😀"
     @State private var isLoading = false
     @State private var errorMessage = ""
     @State private var showEmojiPicker = false
+    @State private var agreedToTerms = false
+    @State private var selectedEmojiCategory = 0
     
-    let emojis = ["😀", "😎", "🥳", "😍", "🤩", "😂", "🔥", "💯", "⭐", "🎉", "🚀", "💪", "🌟", "✨", "💖"]
+    let emojiCategories = [
+        "Смайлы": ["😀","�","😄","😁","😅","😂","�","�","😇","🙂","😉","😌","�😍","�","😘","😗","😙","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","�","�","�🔥","😪","😴","🥱","😷","🤒","🤕","🤢","🤮","🥴","😵","🤯","🥳","🥺","😢","😭","😤","😠","😡","🤬","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖","😈","👿"],
+        "Жесты": ["�","👎","👏","�","🤝","💪","👋","🤞","✌️","🤟","👌","🤌","👈","👉","👆","👇","☝️","✋","🤚","🖐️","🖖","🤙","🙏","✍️","💅","🤳","💃","🕺","👯","🧏","🧎","👰","🤵","🙋","🙆","🙅","🤷","🤦","🙍","🙎","💆","💇","🧖"],
+        "Животные": ["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤","🐣","🐥","🦆","🦅","🦉","🦇","🐺","🐗","🐴","🦄","🐝","🐛","🦋","🐌","🐞","🐜","🦟","🦗","🕷️","🦂","🐢","🐍","🦎","🦖","🦕","🐙","🦑","🦐","🦞","🦀","🐡","🐠","🐟","🐬","🐳","🐋","🦈","🐊","🐅","🐆","🦓","🦍","🐘","🦏","🐪","�"]
+    ]
     
     var body: some View {
         NavigationView {
             ZStack {
                 // Background gradient
                 LinearGradient(
-                    colors: [Color(hex: "ff4d6a"), Color(hex: "6c5ce7")],
+                    colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -28,7 +35,7 @@ struct AuthView: View {
                     
                     // Logo
                     Text("sotspw")
-                        .font(.system(size: 52, weight: .black))
+                        .font(.custom("Google Sans", size: 52).weight(.semibold).italic())
                         .foregroundColor(.white)
                     
                     // Auth card
@@ -70,6 +77,24 @@ struct AuthView: View {
                                 .foregroundColor(.white)
                         }
                         
+                        // Email (registration only)
+                        if !isLoginMode {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Email")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.8))
+                                
+                                TextField("", text: $email)
+                                    .textFieldStyle(PlainTextFieldStyle())
+                                    .padding()
+                                    .background(Color.white.opacity(0.2))
+                                    .cornerRadius(10)
+                                    .foregroundColor(.white)
+                                    .keyboardType(.emailAddress)
+                                    .autocapitalization(.none)
+                            }
+                        }
+                        
                         // Password
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Пароль")
@@ -105,8 +130,28 @@ struct AuthView: View {
                                 }
                                 
                                 if showEmojiPicker {
+                                    // Category selector
+                                    ScrollView(.horizontal, showsIndicators: false) {
+                                        HStack(spacing: 8) {
+                                            ForEach(Array(emojiCategories.keys.enumerated()), id: \.offset) { index, category in
+                                                Button(action: {
+                                                    selectedEmojiCategory = index
+                                                }) {
+                                                    Text(category)
+                                                        .font(.caption)
+                                                        .foregroundColor(selectedEmojiCategory == index ? .white : .white.opacity(0.6))
+                                                        .padding(.horizontal, 12)
+                                                        .padding(.vertical, 6)
+                                                        .background(selectedEmojiCategory == index ? Color.white.opacity(0.3) : Color.white.opacity(0.1))
+                                                        .cornerRadius(12)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    .padding(.bottom, 8)
+                                    
                                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                                        ForEach(emojis, id: \.self) { emojiOption in
+                                        ForEach(Array(emojiCategories.values)[selectedEmojiCategory], id: \.self) { emojiOption in
                                             Button(action: {
                                                 emoji = emojiOption
                                                 showEmojiPicker = false
@@ -121,6 +166,20 @@ struct AuthView: View {
                                     }
                                     .padding(.vertical, 8)
                                 }
+                            }
+                        }
+                        
+                        // Terms agreement (registration only)
+                        if !isLoginMode {
+                            HStack(spacing: 8) {
+                                Button(action: { agreedToTerms.toggle() }) {
+                                    Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
+                                        .foregroundColor(agreedToTerms ? .white : .white.opacity(0.6))
+                                }
+                                
+                                Text("Я соглашаюсь с документами")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.8))
                             }
                         }
                         
@@ -167,6 +226,17 @@ struct AuthView: View {
         guard !username.isEmpty, !password.isEmpty else {
             errorMessage = "Заполните все поля"
             return
+        }
+        
+        if !isLoginMode {
+            guard !email.isEmpty else {
+                errorMessage = "Введите email"
+                return
+            }
+            guard agreedToTerms else {
+                errorMessage = "Необходимо согласиться с документами"
+                return
+            }
         }
         
         isLoading = true
