@@ -209,8 +209,18 @@ struct MusicPostView: View {
     }
     
     private func publishPost() {
-        // TODO: Implement music post creation
-        presentationMode.wrappedValue.dismiss()
+        print("Publishing music post: artist=\(artist), title=\(title), caption=\(caption)")
+        APIManager.shared.createPost(caption: caption, audio: [], artist: artist, title: title) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    print("Music post published: \(response)")
+                    presentationMode.wrappedValue.dismiss()
+                case .failure(let error):
+                    print("Error publishing music post: \(error)")
+                }
+            }
+        }
     }
 }
 
@@ -262,8 +272,18 @@ struct TextPostView: View {
     }
     
     private func publishPost() {
-        // TODO: Implement text post creation
-        presentationMode.wrappedValue.dismiss()
+        print("Publishing text post: caption=\(caption)")
+        APIManager.shared.createPost(caption: caption) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    print("Text post published: \(response)")
+                    presentationMode.wrappedValue.dismiss()
+                case .failure(let error):
+                    print("Error publishing text post: \(error)")
+                }
+            }
+        }
     }
 }
 
@@ -341,7 +361,17 @@ struct MediaPostView: View {
     }
     
     private func publishPost() {
-        // TODO: Implement media post creation
-        presentationMode.wrappedValue.dismiss()
+        print("Publishing media post: caption=\(caption), images=\(selectedImages), videos=\(selectedVideos)")
+        APIManager.shared.createPost(caption: caption, images: selectedImages, videos: selectedVideos) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    print("Media post published: \(response)")
+                    presentationMode.wrappedValue.dismiss()
+                case .failure(let error):
+                    print("Error publishing media post: \(error)")
+                }
+            }
+        }
     }
 }

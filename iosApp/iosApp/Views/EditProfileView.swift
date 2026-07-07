@@ -50,42 +50,21 @@ struct EditProfileView: View {
                     }
                     .padding(.horizontal)
                     
-                    // Settings section
-                    VStack(spacing: 0) {
-                        // Change password
-                        Button(action: { showPasswordChange = true }) {
-                            HStack {
-                                Image(systemName: "lock")
-                                    .foregroundColor(.gray)
-                                Text("Изменить пароль")
-                                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                            }
-                            .padding()
-                            .background(Color(UIColor.secondarySystemGroupedBackground))
+                    // Settings button
+                    Button(action: { showThemeSettings = true }) {
+                        HStack {
+                            Image(systemName: "gearshape")
+                                .foregroundColor(.gray)
+                            Text("Настройки")
+                                .foregroundColor(colorScheme == .dark ? .white : .black)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
                         }
-                        
-                        Divider()
-                            .padding(.leading)
-                        
-                        // Theme settings
-                        Button(action: { showThemeSettings = true }) {
-                            HStack {
-                                Image(systemName: "paintbrush")
-                                    .foregroundColor(.gray)
-                                Text("Тема оформления")
-                                    .foregroundColor(colorScheme == .dark ? .white : .black)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(.gray)
-                            }
-                            .padding()
-                            .background(Color(UIColor.secondarySystemGroupedBackground))
-                        }
+                        .padding()
+                        .background(Color(UIColor.secondarySystemGroupedBackground))
+                        .cornerRadius(12)
                     }
-                    .cornerRadius(12)
                     .padding(.horizontal)
                     
                     Spacer()
@@ -230,15 +209,31 @@ struct ChangePasswordView: View {
 struct ThemeSettingsView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
-    @State private var selectedTheme: String = "dark"
+    @StateObject private var themeManager = ThemeManager()
     
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Dark theme
-                Button(action: { selectedTheme = "dark" }) {
+                // System theme
+                Button(action: { themeManager.selectedTheme = "system" }) {
                     HStack {
-                        Image(systemName: selectedTheme == "dark" ? "checkmark.circle.fill" : "circle")
+                        Image(systemName: themeManager.selectedTheme == "system" ? "checkmark.circle.fill" : "circle")
+                            .foregroundColor(Color(hex: "FF4D6A"))
+                        Text("Системная тема")
+                            .foregroundColor(colorScheme == .dark ? .white : .black)
+                        Spacer()
+                    }
+                    .padding()
+                    .background(Color(UIColor.secondarySystemGroupedBackground))
+                }
+                
+                Divider()
+                    .padding(.leading)
+                
+                // Dark theme
+                Button(action: { themeManager.selectedTheme = "dark" }) {
+                    HStack {
+                        Image(systemName: themeManager.selectedTheme == "dark" ? "checkmark.circle.fill" : "circle")
                             .foregroundColor(Color(hex: "FF4D6A"))
                         Text("Темная тема")
                             .foregroundColor(colorScheme == .dark ? .white : .black)
@@ -252,9 +247,9 @@ struct ThemeSettingsView: View {
                     .padding(.leading)
                 
                 // Light theme
-                Button(action: { selectedTheme = "light" }) {
+                Button(action: { themeManager.selectedTheme = "light" }) {
                     HStack {
-                        Image(systemName: selectedTheme == "light" ? "checkmark.circle.fill" : "circle")
+                        Image(systemName: themeManager.selectedTheme == "light" ? "checkmark.circle.fill" : "circle")
                             .foregroundColor(Color(hex: "FF4D6A"))
                         Text("Светлая тема")
                             .foregroundColor(colorScheme == .dark ? .white : .black)
@@ -272,7 +267,6 @@ struct ThemeSettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Готово") {
-                        // TODO: Save theme preference
                         presentationMode.wrappedValue.dismiss()
                     }
                 }

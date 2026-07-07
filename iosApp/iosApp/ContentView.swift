@@ -3,12 +3,15 @@ import SwiftUI
 struct ContentView: View {
     @State private var isAuthenticated = false
     @State private var selectedTab = 0
+    @StateObject private var themeManager = ThemeManager()
     
     var body: some View {
         if isAuthenticated {
             MainTabView(selectedTab: $selectedTab)
+                .preferredColorScheme(themeManager.colorScheme)
         } else {
             AuthView(isAuthenticated: $isAuthenticated)
+                .preferredColorScheme(themeManager.colorScheme)
         }
     }
 }

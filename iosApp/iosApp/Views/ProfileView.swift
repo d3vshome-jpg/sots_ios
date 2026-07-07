@@ -19,13 +19,6 @@ struct ProfileView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color(hex: "FF4D6A"), Color(hex: "FF8FA3")],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-            
             VStack(spacing: 0) {
                 // Header with logo
                 HStack {
@@ -131,12 +124,14 @@ struct ProfileView: View {
                                     }
                                 }
                                 
-                                Button(action: { showCreatePost = true }) {
-                                    Image(systemName: "plus.circle.fill")
-                                        .foregroundColor(Color(hex: "FF4D6A"))
-                                        .frame(width: 44, height: 44)
-                                        .background(Color.white)
-                                        .cornerRadius(12)
+                                if isCurrentUser {
+                                    Button(action: { showCreatePost = true }) {
+                                        Image(systemName: "plus.circle.fill")
+                                            .foregroundColor(Color(hex: "FF4D6A"))
+                                            .frame(width: 44, height: 44)
+                                            .background(Color.white)
+                                            .cornerRadius(12)
+                                    }
                                 }
                             }
                         }
