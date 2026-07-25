@@ -1,4 +1,4 @@
-name: Build iOS App
+name: Build iOS IPA
 
 on:
   push:
@@ -16,14 +16,129 @@ jobs:
     - name: Fix gradlew permissions
       run: chmod +x gradlew
     
-    - name: Build iOS App for Simulator
+    - name: Install ImageMagick
+      run: brew install imagemagick
+    
+    - name: Change App Name to sotspw
       run: |
         cd iosApp
-        xcodebuild -scheme iosApp -configuration Release -destination 'platform=iOS Simulator,name=iPhone 17' -derivedDataPath build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO SKIP_KOTLIN_FRAMEWORK=1
+        find . -name "Info.plist" -not -path "*/build/*" -not -path "*/Pods/*" | while read plist; do
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName sotspw" "$plist" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :CFBundleName sotspw" "$plist" 2>/dev/null || true
+        done
     
-    - name: Upload .app
+    - name: Generate App Icons from logo.png
+      run: |
+        mkdir -p iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/
+        
+        declare -A icons=(
+          ["icon-20x20@2x.png"]="40"
+          ["icon-20x20@3x.png"]="60"
+          ["icon-29x29@2x.png"]="58"
+          ["icon-29x29@3x.png"]="87"
+          ["icon-40x40@2x.png"]="80"
+          ["icon-40x40@3x.png"]="120"
+          ["icon-60x60@2x.png"]="120"
+          ["icon-60x60@3x.png"]="180"
+          ["icon-76x76@2x.png"]="152"
+          ["icon-83.5x83.5@2x.png"]="167"
+          ["icon-1024x1024.png"]="1024"
+        )
+        
+        for filename in "${!icons[@]}"; do
+          size=${icons[$filename]}
+          convert logo.png -resize ${size}x${size} "iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/$filename"
+        done
+        
+        cat > iosApp/iosApp/Assets.xcassets/AppIcon.appiconset/Contents.json << 'EOF'
+        {
+          "images": [
+            {"size":"20x20","idiom":"iphone","filename":"icon-20x20@2x.png","scale":"2x"},
+            {"size":"20x20","idiom":"iphone","filename":"icon-20x20@3x.png","scale":"3x"},
+            {"size":"29x29","idiom":"iphone","filename":"icon-29x29@2x.png","scale":"2x"},
+            {"size":"29x29","idiom":"iphone","filename":"icon-29x29@3x.png","scale":"3x"},
+            {"size":"40x40","idiom":"iphone","filename":"icon-40x40@2x.png","scale":"2x"},
+            {"size":"40x40","idiom":"iphone","filename":"icon-40x40@3x.png","scale":"3x"},
+            {"size":"60x60","idiom":"iphone","filename":"icon-60x60@2x.png","scale":"2x"},
+            {"size":"60x60","idiom":"iphone","filename":"icon-60x60@3x.png","scale":"3x"},
+            {"size":"20x20","idiom":"ipad","filename":"icon-20x20@2x.png","scale":"2x"},
+            {"size":"29x29","idiom":"ipad","filename":"icon-29x29@2x.png","scale":"2x"},
+            {"size":"40x40","idiom":"ipad","filename":"icon-40x40@2x.png","scale":"2x"},
+            {"size":"76x76","idiom":"ipad","filename":"icon-76x76@2x.png","scale":"2x"},
+            {"size":"83.5x83.5","idiom":"ipad","filename":"icon-83.5x83.5@2x.png","scale":"2x"},
+            {"size":"1024x1024","idiom":"ios-marketing","filename":"icon-1024x1024.png","scale":"1x"}
+          ],
+          "info": {"version": 1, "author": "xcode"}
+        }
+        EOF
+    
+    - name: Build iOS App Archive
+      run: |
+        cd iosApp
+        xcodebuild archive \
+          -scheme iosApp \
+          -configuration Release \
+          -archivePath build/iosApp.xcarchive \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          SKIP_KOTLIN_FRAMEWORK=1
+    
+    - name: Create ExportOptions.plist
+      run: |
+        cd iosApp
+        cat > ExportOptions.plist << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>method</key>
+          <string>development</string>
+          <key>teamID</key>
+          <string>DUMMYTEAM</string>
+          <key>signingStyle</key>
+          <string>manual</string>
+          <key>provisioningProfiles</key>
+          <dict/>
+        </dict>
+        </plist>
+        EOF
+    
+    - name: Export IPA
+      run: |
+        cd iosApp
+        xcodebuild -exportArchive \
+          -archivePath build/iosApp.xcarchive \
+          -exportPath build \
+          -exportOptionsPlist ExportOptions.plist \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+      continue-on-error: true
+    
+    - name: Create IPA manually (fallback)
+      if: always()
+      run: |
+        cd iosApp
+        if [ -f build/iosApp.ipa ]; then
+          echo "✅ IPA exported"
+        else
+          mkdir -p build/Payload
+          cp -r build/iosApp.xcarchive/Products/Applications/*.app build/Payload/
+          cd build
+          zip -r sotspw.ipa Payload
+        fi
+    
+    - name: Rename IPA
+      run: |
+        cd iosApp/build
+        if [ -f iosApp.ipa ]; then
+          mv iosApp.ipa sotspw.ipa
+        fi
+    
+    - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
-        name: ios-app
-        path: iosApp/build/Build/Products/Release-iphonesimulator/*.app
+        name: sotspw
+        path: iosApp/build/*.ipa
         retention-days: 30
