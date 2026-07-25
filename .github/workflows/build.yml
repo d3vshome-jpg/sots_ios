@@ -136,6 +136,24 @@ jobs:
           mv iosApp.ipa sotspw.ipa
         fi
     
+    - name: Fix isideload app name
+      run: |
+        # Исправляем имя в конфиге isideload, если он используется
+        if [ -f "isideload.toml" ]; then
+          sed -i 's/sotspw_ios/sotspw-ios/g' isideload.toml
+        fi
+        
+        # Или создаем правильный конфиг
+        cat > isideload.toml << 'EOF'
+        [app]
+        name = "sotspw-ios"
+        bundle_id = "com.sotspw.app"
+        version = "1.0.0"
+        
+        [development]
+        team_id = "YOUR_TEAM_ID"
+        EOF
+    
     - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
